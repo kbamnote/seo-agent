@@ -1,7 +1,11 @@
 # Playwright's own image: Chromium and every system library it needs are already
 # here. Installing them onto a bare node image is the usual way a hosted
-# browser-automation deploy fails, and the version must match the playwright
-# package in package.json.
+# browser-automation deploy fails.
+#
+# This tag must match the playwright version in package.json exactly, which is
+# why that dependency is pinned rather than a caret range: a fresh install that
+# drifts to 1.50 would pair a newer library with this image's older Chromium,
+# and Playwright refuses to run that combination.
 FROM mcr.microsoft.com/playwright:v1.49.1-jammy
 
 WORKDIR /app
