@@ -15,7 +15,7 @@
 import { existsSync, unlinkSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Page } from 'playwright';
-import { SESSIONS_DIR } from '../config.ts';
+import { SESSIONS_DIR, env } from '../config.ts';
 import { log } from '../util/log.ts';
 import { snapshot } from './browser.ts';
 
@@ -93,6 +93,29 @@ function continueFile(domain: string): string {
 }
 
 export async function requestAssist(req: AssistRequest): Promise<AssistOutcome> {
+  /**
+   * Nobody is there to help on a headless host.
+   *
+   * Assist Mode exists so a person can clear a CAPTCHA in a window they can
+   * see. Running headless — on Railway, or in a scheduled job — there is no
+   * window and no person, so waiting ten minutes achieves nothing except
+   * burning ten minutes of a cron run, once per stuck platform. Give up at
+   * once and say why, so the submission is recorded as needing a human rather
+   * than silently timing out.
+   */
+  if (env.headless) {
+    const challenge = await detectChallenge(req.page).catch(() => null);
+    log.warn(
+      `${req.domain} needs a person (${challenge ?? 'sign-in'}) and this host has no screen. ` +
+        'Skipping. Run this platform from a machine where you can see the browser, ' +
+        'or move it to the manual queue.',
+    );
+    await notifyOperator(
+      `SEO agent could not finish on ${req.domain}: ${req.need} No screen on this host.`,
+    );
+    return 'no_operator';
+  }
+
   const timeoutMs = req.timeoutMs ?? 10 * 60_000;
   const shot = await snapshot(req.page, req.domain, 'assist');
   const sentinel = continueFile(req.domain);

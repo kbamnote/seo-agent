@@ -74,12 +74,39 @@ npm run vet -- --limit 40 --judge
 
 ### 6. Schedule the runs
 
-Add a second service from the same repo, with a cron schedule and a start
-command of `npm run daily`; and a third, weekly, running `npm run weekly`.
-Point both at the same volume. Railway runs the container, it executes, it
-exits — which is exactly how those commands already behave.
+The point of this step is that your team logs in each morning and finds work
+waiting, instead of someone having to run a command to create it.
+
+Add a **second service** in the same project:
+
+| Setting | Value |
+|---|---|
+| Source | the same GitHub repo |
+| Custom Start Command | `npx tsx src/cli.ts daily` |
+| Cron Schedule | `0 5 * * *` (05:00 UTC, ~10:30 IST) |
+| Volume | the same one, mounted at `/app/data` |
+| Variables | the same set as the web service |
+
+Then a **third** for the weekly re-check of every link ever built:
+
+| Setting | Value |
+|---|---|
+| Custom Start Command | `npx tsx src/cli.ts weekly` |
+| Cron Schedule | `0 4 * * 0` (Sundays) |
+| Volume | the same, at `/app/data` |
+
+Railway starts the container, the command runs, the container exits — which is
+exactly how `daily` and `weekly` already behave, so nothing else is needed.
+
+**All three services must share one volume.** They are one installation; give
+them separate volumes and the cron jobs write content the web UI cannot see.
 
 Do not use `scripts/install-schedule.ps1` here; that is for a Windows PC.
+
+What the daily job does: tops up content for each type, submits what is ready
+within quota, exports the manual queue, verifies what was sent, refreshes the
+reports, and alerts on anything lost. A failing step does not stop the rest —
+if generation fails on an LLM quota, yesterday's links still get verified.
 
 ---
 
@@ -91,8 +118,12 @@ This is the real cost, and it is not fixable with configuration.
 
 When a platform shows a CAPTCHA, an OTP or a login wall, the agent opens a
 browser window and waits for a person to deal with it. On Railway there is no
-screen and nobody to look at it, so that pause just times out after ten minutes
-and the submission is abandoned.
+screen and nobody to look at it.
+
+With `HEADLESS=true` the agent now recognises this and gives up at once,
+recording the submission as needing a human rather than waiting ten minutes for
+somebody who will never arrive. Before that, a single stuck platform could burn
+ten minutes of a cron run, and several could consume the whole thing.
 
 What that means in practice: **only platforms needing no human step can be
 automated from Railway.** Everything else has to be either done locally or
