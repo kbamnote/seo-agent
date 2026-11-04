@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEO agent</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <strong id="client-name">SEO agent</strong>
+      <span class="muted" id="client-site"></span>
+    </div>
+    <nav id="nav">
+      <button data-view="overview" class="on">Overview</button>
+      <button data-view="approvals">Approvals <span class="badge" id="badge-approvals" hidden>0</span></button>
+      <button data-view="manual">Manual queue <span class="badge" id="badge-manual" hidden>0</span></button>
+      <button data-view="queue">Ready to send</button>
+      <button data-view="links">Links</button>
+      <button data-view="catalog">Catalog</button>
+    </nav>
+    <button id="refresh" class="ghost" title="Reload from the database">Refresh</button>
+  </header>
+
+  <main id="main"><p class="muted pad">Loading…</p></main>
+
+  <div id="toast" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

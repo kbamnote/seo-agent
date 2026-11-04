@@ -1,0 +1,76 @@
+{
+  "_comment": "Search footprints per submission type. Placeholders: {niche} {city} {country} {keyword} {brand}. `weight` biases how often a footprint is used when the quota is smaller than the footprint list. Footprints that only ever return link farms belong in `retired`, not deleted, so nobody re-adds them.",
+
+  "bookmarking": [
+    { "id": "bm-submit-story", "query": "\"submit a story\" social bookmarking site", "weight": 3 },
+    { "id": "bm-inurl-story", "query": "inurl:/story.php \"bookmarking\"", "weight": 2 },
+    { "id": "bm-add-new-story", "query": "\"add a new story\" bookmarking submit", "weight": 2 },
+    { "id": "bm-niche", "query": "social bookmarking site submit {niche}", "weight": 2 },
+    { "id": "bm-paste", "query": "free paste site publish public note no signup", "weight": 3 },
+    { "id": "bm-curation", "query": "content curation platform create public collection links", "weight": 3 }
+  ],
+
+  "blog": [
+    { "id": "blog-write-for-us", "query": "\"write for us\" {niche}", "weight": 4 },
+    { "id": "blog-guest-post", "query": "\"submit a guest post\" {niche}", "weight": 4 },
+    { "id": "blog-contribute", "query": "\"contribute an article\" {niche} {country}", "weight": 3 },
+    { "id": "blog-inurl-write", "query": "inurl:write-for-us {niche}", "weight": 3 },
+    { "id": "blog-city", "query": "\"guest post\" blog {city} education technology", "weight": 2 },
+    { "id": "blog-platforms", "query": "free blogging platform publish articles custom links", "weight": 3 }
+  ],
+
+  "profile": [
+    { "id": "pr-community", "query": "developer community create profile website field {niche}", "weight": 3 },
+    { "id": "pr-forum", "query": "\"powered by phpBB\" register profile {niche}", "weight": 1 },
+    { "id": "pr-qa", "query": "question answer site create profile {niche} {country}", "weight": 2 },
+    { "id": "pr-business", "query": "business profile listing site free {city}", "weight": 3 },
+    { "id": "pr-creator", "query": "creator page link in bio platform free", "weight": 2 }
+  ],
+
+  "directory": [
+    { "id": "dir-add-business", "query": "\"add your business\" free listing {city}", "weight": 4 },
+    { "id": "dir-submit-site", "query": "\"submit your site\" directory {niche}", "weight": 2 },
+    { "id": "dir-local", "query": "local business directory {city} {country} free listing", "weight": 4 },
+    { "id": "dir-education", "query": "{country} education institute directory add listing", "weight": 3 },
+    { "id": "dir-training", "query": "training institute listing site {city} submit", "weight": 3 }
+  ],
+
+  "pdf": [
+    { "id": "pdf-upload", "query": "free document sharing site upload pdf public", "weight": 3 },
+    { "id": "pdf-publish", "query": "publish pdf online free shareable link no login", "weight": 2 },
+    { "id": "pdf-flipbook", "query": "free flipbook publisher upload pdf public catalogue", "weight": 2 }
+  ],
+
+  "ppt": [
+    { "id": "ppt-upload", "query": "upload presentation online free public share", "weight": 3 },
+    { "id": "ppt-slides", "query": "free slide sharing platform publish deck", "weight": 3 }
+  ],
+
+  "image": [
+    { "id": "img-sharing", "query": "free image sharing site upload public with description link", "weight": 3 },
+    { "id": "img-infographic", "query": "infographic sharing site submit free", "weight": 2 }
+  ],
+
+  "mindmap": [
+    { "id": "mm-free", "query": "free online mind map maker public share link", "weight": 3 },
+    { "id": "mm-concept", "query": "concept map tool publish public no signup", "weight": 2 }
+  ],
+
+  "retired": [
+    {
+      "id": "bm-pligg",
+      "query": "\"powered by pligg\"",
+      "why": "Returns pure link farms. Every site found this way is a deindexed CMS with thousands of outbound links; the vetter rejects them all, so the search quota is wasted."
+    },
+    {
+      "id": "dir-free-for-all",
+      "query": "\"free for all links\" add url",
+      "why": "FFA pages. Not indexed, no value, and being listed beside pharma spam is a negative signal."
+    },
+    {
+      "id": "ping-services",
+      "query": "free ping service submit blog url",
+      "why": "Ping services have had no effect since the Blog Search API was retired. IndexNow plus a sitemap ping does the real job — see src/indexing/."
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "_README": "Copy this file to <client-id>.json, set id to that same filename, and fill it in. Files starting with _ are ignored by the loader, so this one is never treated as a client. Then: npm run cli -- client add --client <client-id>",
+
+  "id": "example-client",
+  "name": "Example Client Pvt Ltd",
+  "siteUrl": "https://example.com",
+  "niche": "what the business actually does, in a sentence",
+  "city": "Nagpur",
+  "country": "India",
+  "brandNames": ["Example Client", "exampleclient"],
+
+  "contact": {
+    "email": "owner@example.com",
+    "phone": "9000000000",
+    "preferredUsername": "exampleclient"
+  },
+
+  "sourceSheetId": null,
+  "agentSheetId": null,
+
+  "_keywordsNote": "Point targetUrl at the real landing page for each keyword, not the homepage. A deep link to the page that answers the query is worth considerably more than another homepage link, and the anchor then matches where it leads.",
+
+  "keywords": [
+    {
+      "keyword": "Primary Service in City",
+      "targetUrl": "https://example.com/the-actual-page",
+      "priority": 1,
+      "anchors": {
+        "exact": ["Primary Service in City"],
+        "partial": ["primary service", "service in City"],
+        "branded": ["Example Client", "Example Client City"],
+        "naked": ["example.com"]
+      }
+    }
+  ],
+
+  "content": {
+    "_comment": "facts is the ONLY source of specifics the writer may state about this client. Leave it empty and the writer is instructed to say nothing specific about the business at all. Get these from the client, never from a model.",
+    "tone": "plain, practical, written for the person actually deciding",
+    "audience": "who is reading, and what they are trying to decide",
+    "facts": [],
+    "forbidden": [
+      "percentages or figures the client has not verified",
+      "fees or discounts",
+      "testimonials or named customers",
+      "claims of being 'the best' or 'number one'",
+      "comparisons naming competitors"
+    ],
+    "mustInclude": ["a concrete takeaway a reader can act on without buying anything"]
+  },
+
+  "quotas": {
+    "_comment": "Low on purpose. Forty links in an afternoon from one IP, all pointing at one domain, is the footprint that gets a profile discounted.",
+    "perDayTotal": 8,
+    "perDayPerType": {
+      "bookmarking": 4,
+      "profile": 2,
+      "blog": 1,
+      "directory": 2,
+      "pdf": 1,
+      "ppt": 1,
+      "image": 1,
+      "mindmap": 1
+    },
+    "perSitePerWeek": 1,
+    "minMinutesBetweenSubmissions": 12
+  },
+
+  "approval": {
+    "_comment": "Blog articles wait for a human; everything else goes automatically. Template-generated copy always waits, whatever is listed here.",
+    "autoSubmit": ["bookmarking", "profile", "directory", "pdf", "ppt", "image", "mindmap", "ping"],
+    "requiresApproval": ["blog"]
+  }
+}

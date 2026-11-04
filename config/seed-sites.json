@@ -1,0 +1,386 @@
+{
+  "_comment": "Curated starting catalog, so Phase 1 is useful with no search API key at all. Everything the team already used successfully is here, plus the obvious platforms around it. `dofollow` is deliberately null almost everywhere — the vetter measures it rather than trusting a list that goes stale. `manualOnly: true` means the platform's terms forbid automated posting: the agent prepares the content and a human posts it.",
+
+  "sites": [
+    {
+      "domain": "substack.com",
+      "name": "Substack",
+      "homeUrl": "https://substack.com/",
+      "categories": ["blog", "profile", "bookmarking"],
+      "adapter": "substack",
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Already used successfully for blog, profile and a note. Real publication, real readers; the strongest asset in the current profile."
+    },
+    {
+      "domain": "justpaste.it",
+      "name": "JustPaste.it",
+      "homeUrl": "https://justpaste.it/",
+      "categories": ["bookmarking", "pdf"],
+      "adapter": "justpaste",
+      "manualOnly": false,
+      "requiresAccount": false,
+      "notes": "Publishes without an account. Low authority, but instant and already in use."
+    },
+    {
+      "domain": "pearltrees.com",
+      "name": "Pearltrees",
+      "homeUrl": "https://www.pearltrees.com/",
+      "categories": ["bookmarking", "profile"],
+      "adapter": "pearltrees",
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Curation platform; collections are public and indexed."
+    },
+    {
+      "domain": "diigo.com",
+      "name": "Diigo",
+      "homeUrl": "https://www.diigo.com/",
+      "categories": ["bookmarking", "profile"],
+      "adapter": "diigo",
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Used twice already. Public annotations only count if the item is set public."
+    },
+    {
+      "domain": "padlet.com",
+      "name": "Padlet",
+      "homeUrl": "https://padlet.com/",
+      "categories": ["bookmarking", "image", "mindmap"],
+      "adapter": "padlet",
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Boards are public when shared; doubles as the mindmap target."
+    },
+    {
+      "domain": "start.me",
+      "name": "start.me",
+      "homeUrl": "https://start.me/",
+      "categories": ["bookmarking", "profile"],
+      "adapter": "startme",
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Public start pages are indexed. Already in use."
+    },
+    {
+      "domain": "flipboard.com",
+      "name": "Flipboard",
+      "homeUrl": "https://flipboard.com/",
+      "categories": ["bookmarking", "profile"],
+      "adapter": "flipboard",
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Magazines get real traffic. flip.it short links redirect, so the verifier must follow redirects before looking for the link."
+    },
+    {
+      "domain": "buymeacoffee.com",
+      "name": "Buy Me a Coffee",
+      "homeUrl": "https://buymeacoffee.com/",
+      "categories": ["profile", "bookmarking"],
+      "adapter": "buymeacoffee",
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Creator page with a website field. One profile per brand; not a repeatable link source."
+    },
+
+    {
+      "domain": "reddit.com",
+      "name": "Reddit",
+      "homeUrl": "https://www.reddit.com/",
+      "categories": ["profile", "blog"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "Terms forbid automated posting, and subreddit moderators remove promotional posts fast. Links are nofollow: worth it for traffic and brand, never for link equity. Agent drafts, human posts."
+    },
+    {
+      "domain": "quora.com",
+      "name": "Quora",
+      "homeUrl": "https://www.quora.com/",
+      "categories": ["profile", "blog"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "Automated answering is against the terms and gets accounts banned. Nofollow. Manual only."
+    },
+    {
+      "domain": "medium.com",
+      "name": "Medium",
+      "homeUrl": "https://medium.com/",
+      "categories": ["blog", "profile"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "External links are nofollow and the spam policy targets automated posting. Good for reach, not for authority."
+    },
+
+    {
+      "domain": "blogger.com",
+      "name": "Blogger",
+      "homeUrl": "https://www.blogger.com/",
+      "categories": ["blog"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Free hosted blog on a Google property. A whole blog is an asset, not a one-off submission: set one up properly or not at all."
+    },
+    {
+      "domain": "wordpress.com",
+      "name": "WordPress.com",
+      "homeUrl": "https://wordpress.com/",
+      "categories": ["blog"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "Marked manual after a real attempt: wordpress.com/ is a marketing page with no submission form, and publishing runs through the Calypso/Gutenberg editor behind a login - a JS app the generic form filler cannot drive. Automating it properly means their REST API with OAuth, which is a project of its own. A human posts it in a minute. Free tier also adds nofollow on some themes; verify per post."
+    },
+    {
+      "domain": "telegra.ph",
+      "name": "Telegraph",
+      "homeUrl": "https://telegra.ph/",
+      "categories": ["blog", "bookmarking"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": false,
+      "notes": "No account needed. Indexes inconsistently; cheap to try, never a cornerstone."
+    },
+    {
+      "domain": "write.as",
+      "name": "Write.as",
+      "homeUrl": "https://write.as/",
+      "categories": ["blog"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": false,
+      "notes": "Anonymous publishing; free posts are indexable."
+    },
+    {
+      "domain": "hashnode.com",
+      "name": "Hashnode",
+      "homeUrl": "https://hashnode.com/",
+      "categories": ["blog", "profile"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "Marked manual after a real attempt: hashnode.com/ is a marketing page and the editor sits behind a login in a JS app, exactly like wordpress.com - the generic form filler found no form. Genuinely relevant to an IT training institute, so the content has to be real engineering writing, not keyword filler."
+    },
+    {
+      "domain": "dev.to",
+      "name": "DEV Community",
+      "homeUrl": "https://dev.to/",
+      "categories": ["blog", "profile"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "Strong fit for the niche but moderators remove thin promotional posts and the terms discourage automation. Human-posted, high-quality articles only."
+    },
+    {
+      "domain": "tumblr.com",
+      "name": "Tumblr",
+      "homeUrl": "https://www.tumblr.com/",
+      "categories": ["blog", "bookmarking", "image"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Low effort, low value. Keep for variety in the profile, not for volume."
+    },
+
+    {
+      "domain": "issuu.com",
+      "name": "Issuu",
+      "homeUrl": "https://issuu.com/",
+      "categories": ["pdf", "ppt"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Free tier publishes publicly. Links inside a PDF are not crawled as links: the value is the description field and the profile."
+    },
+    {
+      "domain": "anyflip.com",
+      "name": "AnyFlip",
+      "homeUrl": "https://anyflip.com/",
+      "categories": ["pdf"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Flipbook host. Same caveat: the crawlable link is in the page description, not the document."
+    },
+    {
+      "domain": "slideshare.net",
+      "name": "SlideShare",
+      "homeUrl": "https://www.slideshare.net/",
+      "categories": ["ppt", "pdf"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Still indexed and still gets traffic for how-to decks. Description links are the target."
+    },
+    {
+      "domain": "slides.com",
+      "name": "Slides",
+      "homeUrl": "https://slides.com/",
+      "categories": ["ppt"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Public decks on the free plan."
+    },
+    {
+      "domain": "imgur.com",
+      "name": "Imgur",
+      "homeUrl": "https://imgur.com/",
+      "categories": ["image"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": false,
+      "notes": "Nofollow and heavily moderated against promotion. Use for image hosting, not for links."
+    },
+    {
+      "domain": "flickr.com",
+      "name": "Flickr",
+      "homeUrl": "https://www.flickr.com/",
+      "categories": ["image", "profile"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Photo pages with a description field; profile carries a website link."
+    },
+    {
+      "domain": "behance.net",
+      "name": "Behance",
+      "homeUrl": "https://www.behance.net/",
+      "categories": ["image", "profile"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "High authority profile link. Needs a genuine portfolio project, so it suits course-project showcases."
+    },
+
+    {
+      "domain": "mindmeister.com",
+      "name": "MindMeister",
+      "homeUrl": "https://www.mindmeister.com/",
+      "categories": ["mindmap"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Free plan allows a few public maps. Mindmap links are the weakest category in the sheet; do not spend real time here."
+    },
+    {
+      "domain": "coggle.it",
+      "name": "Coggle",
+      "homeUrl": "https://coggle.it/",
+      "categories": ["mindmap"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Public diagrams get a shareable URL."
+    },
+    {
+      "domain": "bubbl.us",
+      "name": "bubbl.us",
+      "homeUrl": "https://bubbl.us/",
+      "categories": ["mindmap"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Free tier saves a limited number of public maps."
+    },
+
+    {
+      "domain": "justdial.com",
+      "name": "Justdial",
+      "homeUrl": "https://www.justdial.com/",
+      "categories": ["directory", "profile"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "India's biggest local directory and a real lead source for a Nagpur institute. Listing is phone-verified, so a human completes it once; after that it is a citation to keep consistent, not a repeatable link."
+    },
+    {
+      "domain": "sulekha.com",
+      "name": "Sulekha",
+      "homeUrl": "https://www.sulekha.com/",
+      "categories": ["directory"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "Education and training categories are well used in tier-2 cities. Phone verification; human does it once."
+    },
+    {
+      "domain": "indiamart.com",
+      "name": "IndiaMART",
+      "homeUrl": "https://www.indiamart.com/",
+      "categories": ["directory"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "B2B oriented; a training institute fits the services side. Verification is manual."
+    },
+    {
+      "domain": "yellowpages.in",
+      "name": "Yellow Pages India",
+      "homeUrl": "https://www.yellowpages.in/",
+      "categories": ["directory"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Free listing with a website field."
+    },
+    {
+      "domain": "tradeindia.com",
+      "name": "TradeIndia",
+      "homeUrl": "https://www.tradeindia.com/",
+      "categories": ["directory"],
+      "adapter": null,
+      "manualOnly": true,
+      "requiresAccount": true,
+      "notes": "Same shape as IndiaMART."
+    },
+
+    {
+      "domain": "ipt.pw",
+      "name": "ipt.pw (SEO tools)",
+      "homeUrl": "https://www.ipt.pw/",
+      "categories": ["bookmarking"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": false,
+      "rejected": true,
+      "rejectReason": "Recorded twice in the tracker, but the saved URL was the site's own backlink-maker tool page. Tool pages create no link you own.",
+      "notes": "Kept in the catalog so it is never re-added as a candidate."
+    },
+    {
+      "domain": "whois.com",
+      "name": "Whois.com",
+      "homeUrl": "https://www.whois.com/",
+      "categories": [],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": false,
+      "rejected": true,
+      "rejectReason": "A whois lookup page was recorded as a backlink. It is a lookup of your own domain and carries no link you placed.",
+      "notes": "Blocklisted so it cannot re-enter the catalog."
+    },
+    {
+      "domain": "social-bookmarkingsites.com",
+      "name": "social-bookmarkingsites.com",
+      "homeUrl": "https://www.social-bookmarkingsites.com/",
+      "categories": ["bookmarking"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Generic bookmarking farm — already used once. Let the vetter score it on outbound-link volume rather than assuming."
+    },
+    {
+      "domain": "bookmarkrange.com",
+      "name": "bookmarkrange.com",
+      "homeUrl": "https://bookmarkrange.com/",
+      "categories": ["bookmarking"],
+      "adapter": null,
+      "manualOnly": false,
+      "requiresAccount": true,
+      "notes": "Same: used once, authority unproven. Vetting decides."
+    }
+  ]
+}

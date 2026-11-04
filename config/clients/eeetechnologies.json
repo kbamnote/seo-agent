@@ -1,0 +1,108 @@
+{
+  "id": "eeetechnologies",
+  "name": "EEE Technologies",
+  "siteUrl": "https://eeetechnologies.in",
+  "niche": "IT training institute (full stack, data analysis, software testing, AI/ML)",
+  "city": "Nagpur",
+  "country": "India",
+  "brandNames": ["EEE Technologies", "eeetechnologies"],
+
+  "contact": {
+    "email": "eeetechnologiesng@gmail.com",
+    "phone": "8928966416",
+    "preferredUsername": "eeetechnologiesng"
+  },
+
+  "sourceSheetId": "1twdRsEZF7P-aH8Ku7BB1YWSuZUo5LBSjzxEhhBCuWGA",
+  "agentSheetId": null,
+
+  "_targetUrlNote": "targetUrl defaults to the homepage. Replace each with the real course landing page once confirmed — deep links to the matching page are worth far more than another homepage link, and the anchor then matches the destination.",
+
+  "keywords": [
+    {
+      "keyword": "Full Stack Development in Nagpur",
+      "targetUrl": "https://eeetechnologies.in",
+      "priority": 1,
+      "anchors": {
+        "exact": ["Full Stack Development in Nagpur"],
+        "partial": ["full stack course in Nagpur", "full stack developer training"],
+        "branded": ["EEE Technologies", "EEE Technologies Nagpur"],
+        "naked": ["eeetechnologies.in"]
+      }
+    },
+    {
+      "keyword": "Data Analysis Course in Nagpur",
+      "targetUrl": "https://eeetechnologies.in",
+      "priority": 1,
+      "anchors": {
+        "exact": ["Data Analysis Course in Nagpur"],
+        "partial": ["data analytics training in Nagpur", "learn data analysis"],
+        "branded": ["EEE Technologies"],
+        "naked": ["eeetechnologies.in"]
+      }
+    },
+    {
+      "keyword": "Software Testing Courses in Nagpur",
+      "targetUrl": "https://eeetechnologies.in",
+      "priority": 2,
+      "anchors": {
+        "exact": ["Software Testing Courses in Nagpur"],
+        "partial": ["software testing training", "QA testing course Nagpur"],
+        "branded": ["EEE Technologies"],
+        "naked": ["eeetechnologies.in"]
+      }
+    },
+    {
+      "keyword": "AI/ML Course in Nagpur",
+      "targetUrl": "https://eeetechnologies.in",
+      "priority": 2,
+      "anchors": {
+        "exact": ["AI/ML Course in Nagpur"],
+        "partial": ["machine learning course in Nagpur", "AI training institute"],
+        "branded": ["EEE Technologies"],
+        "naked": ["eeetechnologies.in"]
+      }
+    }
+  ],
+
+  "content": {
+    "_comment": "What the writer is allowed to say. `facts` is the ONLY source of specifics it may state about the client. Everything absent from it must stay general — SEO content that invents a placement percentage or a fee is a liability, not a ranking.",
+    "tone": "practical, plain, written for a working adult in Nagpur deciding where to train",
+    "audience": "students and career-changers in Nagpur and the wider Vidarbha region",
+    "facts": [],
+    "_factsTodo": "Fill these in from the client: course durations, batch sizes, modes (classroom/online), certification, placement support (describe it, do not quantify it unless they give a verified number), years in operation, trainer background.",
+    "forbidden": [
+      "placement percentages or salary figures",
+      "student counts, ratings or rankings",
+      "fees or discounts",
+      "testimonials or named students",
+      "claims of being 'the best' or 'number one'",
+      "comparisons naming competing institutes"
+    ],
+    "mustInclude": [
+      "a concrete, useful takeaway a reader can act on without enrolling"
+    ]
+  },
+
+  "quotas": {
+    "perDayTotal": 8,
+    "perDayPerType": {
+      "bookmarking": 4,
+      "profile": 2,
+      "blog": 1,
+      "directory": 2,
+      "pdf": 1,
+      "ppt": 1,
+      "image": 1,
+      "mindmap": 1
+    },
+    "perSitePerWeek": 1,
+    "minMinutesBetweenSubmissions": 12
+  },
+
+  "approval": {
+    "_comment": "Locked decision: auto-submit everything except blog articles, which wait for human approval.",
+    "autoSubmit": ["bookmarking", "profile", "directory", "pdf", "ppt", "image", "mindmap", "ping"],
+    "requiresApproval": ["blog"]
+  }
+}

@@ -1,0 +1,21 @@
+node_modules/
+.env
+*.log
+
+# Runtime state — contains credentials, cookies and generated assets.
+data/agent.db
+data/agent.db-journal
+data/agent.db-wal
+data/agent.db-shm
+data/sessions/
+data/artifacts/
+
+# Generated output: regenerated on every run, so committing it is pure churn.
+# Note that data/snapshots/ is deliberately NOT ignored - those are redacted
+# copies of the source tracker (passwords replaced by a verdict) and they are
+# worth versioning, because they let the audit run with no credentials at all.
+data/reports/
+
+# Google service-account key. Never commit.
+secrets/
+*service-account*.json

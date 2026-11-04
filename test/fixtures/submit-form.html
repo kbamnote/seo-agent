@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fixture — bookmarking submission form</title>
+</head>
+<body>
+  <!--
+    A deliberately ordinary submission form, used by `npm run submit -- selftest`
+    to exercise the generic form filler against a local file with no network and
+    no third party involved.
+
+    Field names are the ones these forms really use, including two awkward cases:
+    a select with a placeholder option, and an unlabelled textarea that should be
+    guessed as the body.
+  -->
+  <h1>Submit a story</h1>
+
+  <form id="submission" action="/thanks" method="post">
+    <p>
+      <label for="story_title">Story title</label>
+      <input type="text" id="story_title" name="story_title" maxlength="80" required>
+    </p>
+
+    <p>
+      <label for="page_url">Page URL</label>
+      <input type="url" id="page_url" name="page_url" required>
+    </p>
+
+    <p>
+      <label for="descr">Description</label>
+      <textarea id="descr" name="description" rows="5" maxlength="400"></textarea>
+    </p>
+
+    <p>
+      <label for="tags">Tags (comma separated)</label>
+      <input type="text" id="tags" name="tags">
+    </p>
+
+    <p>
+      <label for="cat">Category</label>
+      <select id="cat" name="category">
+        <option value="">-- choose a category --</option>
+        <option>Business</option>
+        <option>Education</option>
+        <option>Technology</option>
+      </select>
+    </p>
+
+    <p>
+      <label for="email">Your email</label>
+      <input type="email" id="email" name="email">
+    </p>
+
+    <p>
+      <label for="submitter">Your name</label>
+      <input type="text" id="submitter" name="full_name">
+    </p>
+
+    <p>
+      <label for="notes">Anything else</label>
+      <textarea id="notes" name="extra_notes" rows="2"></textarea>
+    </p>
+
+    <p>
+      <label><input type="checkbox" name="agree"> I agree to the terms</label>
+    </p>
+
+    <p><button type="submit">Publish story</button></p>
+  </form>
+</body>
+</html>

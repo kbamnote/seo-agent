@@ -1,0 +1,51 @@
+{
+  "name": "seo-ai-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Off-page SEO agent: discovers submission sites, generates assets, submits, verifies backlinks and keeps a Google Sheet in sync.",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "db:init": "tsx src/cli.ts db init",
+    "client:add": "tsx src/cli.ts client add",
+    "import:snapshot": "tsx src/cli.ts import snapshot",
+    "sync": "tsx src/cli.ts sheet pull",
+    "sheet:create": "tsx src/cli.ts sheet create",
+    "sheet:push": "tsx src/cli.ts sheet push",
+    "report:audit": "tsx src/cli.ts report audit",
+    "discover:seed": "tsx src/cli.ts discover seed",
+    "discover": "tsx src/cli.ts discover run",
+    "vet": "tsx src/cli.ts vet run",
+    "catalog": "tsx src/cli.ts catalog",
+    "content": "tsx src/cli.ts content",
+    "generate": "tsx src/cli.ts content generate",
+    "submit": "tsx src/cli.ts submit",
+    "submit:selftest": "tsx src/cli.ts submit selftest",
+    "verify": "tsx src/cli.ts verify run",
+    "report:links": "tsx src/cli.ts report links",
+    "dashboard": "tsx src/cli.ts report dashboard",
+    "doctor": "tsx src/cli.ts doctor",
+    "web": "tsx src/cli.ts web",
+    "daily": "tsx src/cli.ts daily",
+    "weekly": "tsx src/cli.ts weekly",
+    "llm:ping": "tsx src/cli.ts llm ping",
+    "cli": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
+    "googleapis": "^144.0.0",
+    "pdfkit": "^0.15.2",
+    "playwright": "^1.49.1",
+    "pptxgenjs": "^3.12.0",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
