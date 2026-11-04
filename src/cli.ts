@@ -64,6 +64,27 @@ function parseType(value: string): SubmissionType {
   return t as SubmissionType;
 }
 
+/**
+ * Fail with an explanation rather than a cryptic module error.
+ *
+ * Everything here stores state through `node:sqlite`, which exists only from
+ * Node 24. On Node 22 the process dies with "No such built-in module:
+ * node:sqlite", which says nothing about what to do — and that is exactly how
+ * the first Railway deploy failed, because the Playwright image ships Node 22.
+ */
+const nodeMajor = Number(process.versions.node.split('.')[0]);
+if (nodeMajor < 24) {
+  console.error(
+    [
+      `This needs Node 24 or newer; this is Node ${process.versions.node}.`,
+      'It stores everything through node:sqlite, a built-in that older versions',
+      'do not have. In a container, install Node 24 rather than relying on the',
+      "base image's version.",
+    ].join('\n'),
+  );
+  process.exit(1);
+}
+
 const program = new Command();
 program
   .name('seo-ai-agent')

@@ -8,6 +8,12 @@
 # and Playwright refuses to run that combination.
 FROM mcr.microsoft.com/playwright:v1.49.1-jammy
 
+# That image ships Node 22, and this project stores everything in SQLite through
+# `node:sqlite` — a built-in that only exists from Node 24. On 22 the container
+# starts and dies instantly with "No such built-in module: node:sqlite".
+# So: keep the image's Chromium, replace its Node.
+RUN apt-get update  && apt-get install -y --no-install-recommends curl ca-certificates gnupg  && curl -fsSL https://deb.nodesource.com/setup_24.x | bash -  && apt-get install -y --no-install-recommends nodejs  && apt-get clean && rm -rf /var/lib/apt/lists/*  && node -e "const m=+process.versions.node.split('.')[0]; if (m < 24) { console.error('expected Node 24+, got '+process.versions.node); process.exit(1); } require('node:sqlite'); console.log('node '+process.versions.node+' with node:sqlite')"
+
 WORKDIR /app
 ENV NODE_ENV=production
 
