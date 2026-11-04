@@ -378,6 +378,16 @@ a client.
 
 ---
 
+## Giving it to your team
+
+The deployed URL **is** the app — UI and API in one service. Nothing else to
+host, and nothing for them to install.
+
+Send them the URL, the username and the password, and
+[docs/TEAM-GUIDE.md](docs/TEAM-GUIDE.md). Their whole job is two tabs: approve
+articles, and work the manual queue. The commands in this README are for
+whoever administers it, not for them.
+
 ## The web UI
 
 ```bash
