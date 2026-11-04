@@ -26,6 +26,7 @@
     "verify": "tsx src/cli.ts verify run",
     "report:links": "tsx src/cli.ts report links",
     "dashboard": "tsx src/cli.ts report dashboard",
+    "dashboard:publish": "tsx src/cli.ts report dashboard && node scripts/publish-dashboard.mjs",
     "doctor": "tsx src/cli.ts doctor",
     "web": "tsx src/cli.ts web",
     "daily": "tsx src/cli.ts daily",

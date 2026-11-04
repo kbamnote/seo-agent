@@ -844,9 +844,11 @@ program
 program
   .command('web')
   .description('open the local web UI (read, approve, work the manual queue)')
-  .option('-p, --port <n>', 'port', '4317')
+  .option('-p, --port <n>', 'port (PORT env wins, for hosts that assign one)')
+  .option('--host <addr>', 'bind address (WEB_HOST env; default 127.0.0.1)')
   .action(async (opts) => {
-    const url = await startWeb(Number(opts.port));
+    const port = Number(process.env.PORT || opts.port || 4317);
+    const url = await startWeb(port, opts.host);
     console.log(`
   ${url}
 `);

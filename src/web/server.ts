@@ -22,6 +22,7 @@
  */
 
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize, resolve } from 'node:path';
 import { PROJECT_ROOT, all, get, initSchema, run } from '../db/index.ts';
@@ -300,9 +301,62 @@ function serveStatic(res: ServerResponse, pathname: string) {
   createReadStream(target).pipe(res);
 }
 
+/**
+ * HTTP Basic auth, required whenever the server is not on loopback.
+ *
+ * This UI approves content for publication and edits the site catalog. On a
+ * laptop, "only reachable from this machine" is the whole protection. The
+ * moment it is hosted, that protection is gone and anyone with the URL can
+ * approve articles in the client's name — so credentials become mandatory, and
+ * the server refuses to start without them rather than coming up unprotected.
+ */
+function credentials(): { user: string; pass: string } | null {
+  const user = process.env.WEB_USER?.trim();
+  const pass = process.env.WEB_PASSWORD?.trim();
+  return user && pass ? { user, pass } : null;
+}
+
+/** Constant-time compare, so a wrong password cannot be found by timing. */
+function same(a: string, b: string): boolean {
+  const x = Buffer.from(a);
+  const y = Buffer.from(b);
+  return x.length === y.length && timingSafeEqual(x, y);
+}
+
+function authorised(req: IncomingMessage): boolean {
+  const creds = credentials();
+  if (!creds) return true; // loopback-only mode; startup already enforced this
+
+  const header = req.headers.authorization ?? '';
+  if (!header.toLowerCase().startsWith('basic ')) return false;
+
+  let decoded = '';
+  try {
+    decoded = Buffer.from(header.slice(6).trim(), 'base64').toString('utf8');
+  } catch {
+    return false;
+  }
+  const split = decoded.indexOf(':');
+  if (split < 0) return false;
+
+  // Both compared, never short-circuited on the username.
+  const userOk = same(decoded.slice(0, split), creds.user);
+  const passOk = same(decoded.slice(split + 1), creds.pass);
+  return userOk && passOk;
+}
+
 async function handle(req: IncomingMessage, res: ServerResponse) {
   const url = new URL(req.url ?? '/', 'http://127.0.0.1');
   const path = url.pathname;
+
+  if (!authorised(req)) {
+    res.writeHead(401, {
+      'www-authenticate': 'Basic realm="SEO agent", charset="UTF-8"',
+      'content-type': 'text/plain',
+    });
+    res.end('authentication required');
+    return;
+  }
 
   if (!path.startsWith('/api/')) return serveStatic(res, path);
 
@@ -390,8 +444,23 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
   }
 }
 
-export function startWeb(port = 4317): Promise<string> {
+export function startWeb(port = 4317, host?: string): Promise<string> {
   initSchema();
+
+  const bind = host ?? process.env.WEB_HOST?.trim() ?? '127.0.0.1';
+  const loopback = bind === '127.0.0.1' || bind === 'localhost' || bind === '::1';
+
+  if (!loopback && !credentials()) {
+    throw new Error(
+      [
+        `Refusing to listen on ${bind} without credentials.`,
+        'This UI approves content for publication and edits the catalog, so on any',
+        'address but loopback it must be protected. Set WEB_USER and WEB_PASSWORD,',
+        'or leave WEB_HOST unset to stay on 127.0.0.1.',
+      ].join('\n'),
+    );
+  }
+
   const server = createServer((req, res) => {
     handle(req, res).catch((err) => {
       log.error(err);
@@ -401,11 +470,10 @@ export function startWeb(port = 4317): Promise<string> {
 
   return new Promise((resolvePromise, reject) => {
     server.on('error', reject);
-    // Loopback only, deliberately: this app approves content for publication.
-    server.listen(port, '127.0.0.1', () => {
-      const url = `http://127.0.0.1:${port}`;
-      log.info(`web UI on ${url}`);
-      resolvePromise(url);
+    server.listen(port, bind, () => {
+      const shown = loopback ? `http://127.0.0.1:${port}` : `http://${bind}:${port}`;
+      log.info(`web UI on ${shown}${credentials() ? ' (password protected)' : ' (loopback only)'}`);
+      resolvePromise(shown);
     });
   });
 }

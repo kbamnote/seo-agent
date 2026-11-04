@@ -1,0 +1,12 @@
+node_modules
+.git
+.env
+secrets
+public
+data/agent.db
+data/agent.db-wal
+data/agent.db-shm
+data/sessions
+data/artifacts
+data/reports
+*.log

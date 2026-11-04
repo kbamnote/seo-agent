@@ -395,6 +395,11 @@ Opens on <http://127.0.0.1:4317>. Six views over the same database the CLI uses:
 | **Links** | every submission with its latest verification: status, rel, what the checker saw |
 | **Catalog** | every platform with both scores; set a site vetted or rejected |
 
+Hosted somewhere (Railway), it needs `WEB_USER` and `WEB_PASSWORD` — the server
+refuses to start on a public address without them. See
+[DEPLOY-RAILWAY.md](docs/DEPLOY-RAILWAY.md), and note that **Assist Mode cannot
+work on a host with no screen**.
+
 ### Three things it deliberately does not do
 
 - **It never runs a command.** The first draft had endpoints that spawned the CLI

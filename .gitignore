@@ -16,6 +16,9 @@ data/artifacts/
 # worth versioning, because they let the audit run with no credentials at all.
 data/reports/
 
+# Built by `npm run dashboard:publish` from data/reports/; not source.
+public/
+
 # Google service-account key. Never commit.
 secrets/
 *service-account*.json
