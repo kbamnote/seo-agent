@@ -21,8 +21,10 @@ COPY . .
 # Mount a Railway volume here. Everything that must survive a redeploy lives
 # under it: the SQLite database, browser profiles, generated assets, reports.
 # Without the volume the agent forgets every link it has ever built.
+# No VOLUME instruction here: Railway rejects it and manages the mount itself.
+# The directory still has to exist for the first boot, before anything is
+# attached to it.
 RUN mkdir -p /app/data
-VOLUME ["/app/data"]
 
 # Railway supplies PORT; the server binds whatever WEB_HOST says.
 ENV WEB_HOST=0.0.0.0
