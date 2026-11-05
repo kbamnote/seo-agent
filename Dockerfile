@@ -24,6 +24,13 @@ RUN npm ci --include=dev
 
 COPY . .
 
+# Diagnostics in the build log, and a real check of the start path.
+# "Class extends value undefined" at startup means something is still
+# invoking an npm that does not match the running Node, so record exactly
+# which binaries exist, and prove the command the container will actually
+# run works before shipping it.
+RUN echo "--- toolchain ---" && echo "node: $(command -v node) $(node --version)" && echo "npm:  $(command -v npm) $(npm --version 2>&1 | head -1)" && echo "all npm on PATH:" && (command -v -a npm || true) && echo "--- start command check ---" && node node_modules/tsx/dist/cli.mjs src/cli.ts --version && echo "start command OK"
+
 # Mount a Railway volume here. Everything that must survive a redeploy lives
 # under it: the SQLite database, browser profiles, generated assets, reports.
 # Without the volume the agent forgets every link it has ever built.
