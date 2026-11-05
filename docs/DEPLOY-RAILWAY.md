@@ -60,16 +60,26 @@ machine" was the entire protection. Hosted, it is gone.
 Settings → Networking → Generate Domain. Open it, sign in with the credentials
 above, and the UI is there.
 
+**Start commands avoid npm on purpose.** The base image ships an npm built for
+its own Node, and running that under the Node 24 we install produces
+`Class extends value undefined is not a constructor or null`. The build removes
+the stale copy, but nothing at runtime should depend on npm being healthy.
+
+In the Console, use the same form:
+
+```bash
+node node_modules/tsx/dist/cli.mjs src/cli.ts <command>
+```
+
 ### 5. Seed the database on first run
 
 The volume starts empty. From Railway's shell, or locally against the same
 volume:
 
 ```bash
-npm run db:init
-npm run cli -- client add --client <your-client>
-npm run discover:seed
-npm run vet -- --limit 40 --judge
+node node_modules/tsx/dist/cli.mjs src/cli.ts db init
+node node_modules/tsx/dist/cli.mjs src/cli.ts discover seed
+node node_modules/tsx/dist/cli.mjs src/cli.ts vet run --limit 40 --judge
 ```
 
 ### 6. Schedule the runs
@@ -82,7 +92,7 @@ Add a **second service** in the same project:
 | Setting | Value |
 |---|---|
 | Source | the same GitHub repo |
-| Custom Start Command | `npx tsx src/cli.ts daily` |
+| Custom Start Command | `node node_modules/tsx/dist/cli.mjs src/cli.ts daily` |
 | Cron Schedule | `0 5 * * *` (05:00 UTC, ~10:30 IST) |
 | Volume | the same one, mounted at `/app/data` |
 | Variables | the same set as the web service |
@@ -91,7 +101,7 @@ Then a **third** for the weekly re-check of every link ever built:
 
 | Setting | Value |
 |---|---|
-| Custom Start Command | `npx tsx src/cli.ts weekly` |
+| Custom Start Command | `node node_modules/tsx/dist/cli.mjs src/cli.ts weekly` |
 | Cron Schedule | `0 4 * * 0` (Sundays) |
 | Volume | the same, at `/app/data` |
 

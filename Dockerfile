@@ -12,7 +12,7 @@ FROM mcr.microsoft.com/playwright:v1.49.1-jammy
 # `node:sqlite` — a built-in that only exists from Node 24. On 22 the container
 # starts and dies instantly with "No such built-in module: node:sqlite".
 # So: keep the image's Chromium, replace its Node.
-RUN apt-get update  && apt-get install -y --no-install-recommends curl ca-certificates gnupg  && curl -fsSL https://deb.nodesource.com/setup_24.x | bash -  && apt-get install -y --no-install-recommends nodejs  && apt-get clean && rm -rf /var/lib/apt/lists/*  && node -e "const m=+process.versions.node.split('.')[0]; if (m < 24) { console.error('expected Node 24+, got '+process.versions.node); process.exit(1); } require('node:sqlite'); console.log('node '+process.versions.node+' with node:sqlite')"
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg && rm -rf /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx /usr/local/lib/node_modules && curl -fsSL https://deb.nodesource.com/setup_24.x | bash - && apt-get install -y --no-install-recommends nodejs && apt-get clean && rm -rf /var/lib/apt/lists/* && node -e "const m=+process.versions.node.split('.')[0]; if (m < 24) { console.error('expected Node 24+, got '+process.versions.node); process.exit(1); } require('node:sqlite');" && npm --version && echo "node $(node --version), npm $(npm --version)"
 
 WORKDIR /app
 ENV NODE_ENV=production
@@ -36,4 +36,6 @@ RUN mkdir -p /app/data
 ENV WEB_HOST=0.0.0.0
 EXPOSE 4317
 
-CMD ["npm", "run", "web"]
+# Run tsx through node directly. Going through npm here means every start
+# depends on npm being healthy, and npm is the thing that broke.
+CMD ["node", "node_modules/tsx/dist/cli.mjs", "src/cli.ts", "web"]
