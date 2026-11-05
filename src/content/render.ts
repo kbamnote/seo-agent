@@ -33,6 +33,38 @@ export function cleanText(text: string): string {
     .replace(/[ \t]{2,}/g, ' ');
 }
 
+/**
+ * Removes bare mentions of the client's domain from body text.
+ *
+ * The design is one link per asset. The first real publish came back with
+ * three: the model had written "eeetechnologies.in" into the prose, and the
+ * platform turned every plain-text occurrence into a link of its own. Several
+ * links to one domain in a short post is a promotional footprint, which is the
+ * opposite of what a citation should look like.
+ *
+ * The inserted markdown link is added after this runs, so it survives.
+ */
+export function stripBareDomain(text: string, siteUrl: string): string {
+  let host: string;
+  try {
+    host = new URL(siteUrl).hostname.replace(/^www\./i, '');
+  } catch {
+    return text;
+  }
+
+  const escaped = host.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // Any bare occurrence: with or without scheme, with or without www, and
+  // swallowing a trailing path so "site.in/courses" goes too.
+  const bare = new RegExp(`(https?:\\/\\/)?(www\\.)?${escaped}(\\/[^\\s)]*)?`, 'gi');
+
+  return text
+    .replace(bare, '')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/ +([.,;:])/g, '$1')
+    .replace(/\(\s*\)/g, '')
+    .trim();
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()
@@ -125,8 +157,13 @@ export function articleToMarkdown(draft: ArticleDraft, anchor: AnchorChoice): st
   draft.sections.forEach((section, si) => {
     out.push(`## ${section.heading}`, '');
     section.paragraphs.forEach((p, pi) => {
+      // Strip bare domain mentions first; the intended link is added after, so
+      // it survives and stays the only one.
+      const clean = stripBareDomain(p, anchor.targetUrl);
       const withLink =
-        si === place.sectionIndex && pi === place.paragraphIndex ? `${p} ${place.sentence}` : p;
+        si === place.sectionIndex && pi === place.paragraphIndex
+          ? `${clean} ${place.sentence}`
+          : clean;
       out.push(withLink, '');
     });
   });
@@ -150,10 +187,11 @@ export function articleToHtml(draft: ArticleDraft, anchor: AnchorChoice): string
   draft.sections.forEach((section, si) => {
     out.push(`<h2>${esc(section.heading)}</h2>`);
     section.paragraphs.forEach((p, pi) => {
+      const clean = stripBareDomain(p, anchor.targetUrl);
       const body =
         si === place.sectionIndex && pi === place.paragraphIndex
-          ? `${esc(p)} ${place.sentence}`
-          : esc(p);
+          ? `${esc(clean)} ${place.sentence}`
+          : esc(clean);
       out.push(`<p>${body}</p>`);
     });
   });
