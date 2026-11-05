@@ -15,10 +15,17 @@ thing genuinely stops working.
 
 New Project → Deploy from GitHub repo → `kbamnote/seo-agent`.
 
-Railway reads `railway.json` and builds from the `Dockerfile`, which is based on
-Microsoft's Playwright image. Chromium and its system libraries are already in
-that image; installing them onto a bare Node image is the usual way a hosted
-browser-automation deploy fails.
+Railway reads `railway.json` and builds from the `Dockerfile`, which starts
+from `node:24-bookworm-slim` and lets Playwright install its own Chromium.
+
+It used to start from Microsoft's Playwright image, which seemed the obvious
+choice because Chromium is already in it. That image ships Node 22 and an npm
+built against it, and this project needs Node 24 for `node:sqlite`; installing
+Node 24 over the top left a mismatched npm on PATH and every container start
+failed with "Class extends value undefined is not a constructor or null". The
+Node base avoids the whole class of problem — npm matches Node from the first
+layer, and `npx playwright install --with-deps chromium` fetches a browser
+matched to the pinned library.
 
 ### 2. Add a volume — do this before the first real run
 
