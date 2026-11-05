@@ -91,13 +91,42 @@ node node_modules/tsx/dist/cli.mjs src/cli.ts vet run --limit 40 --judge
 
 ### 6. Schedule the runs
 
-The point of this step is that your team logs in each morning and finds work
-waiting, instead of someone having to run a command to create it.
+**One service. Do not create a second one for cron.**
 
-Add a **second service** in the same project:
+A Railway volume attaches to **one service only**. A separate cron service
+therefore gets its own empty database: it writes content the panel never shows,
+and reports `Unknown client` for clients the panel lists — while every step
+still prints "ok". That failure is quiet enough to go unnoticed for days.
 
-| Setting | Value |
-|---|---|
+So the schedule runs inside the web process. Add two variables to the web
+service:
+
+| Variable | Value | Meaning |
+|---|---|---|
+| `DAILY_AT` | `05:00` | daily run, UTC (≈10:30 IST) |
+| `WEEKLY_AT` | `04:00` | weekly re-check, UTC |
+| `WEEKLY_DAY` | `0` | 0 is Sunday; optional |
+
+Leave them unset and nothing runs automatically, which is the right default on
+a laptop. The log says which schedule is active at startup:
+
+```
+scheduled: daily at 05:00 UTC, weekly at 04:00 UTC on day 0
+```
+
+To run one by hand at any time, use the Console:
+
+```bash
+node node_modules/tsx/dist/cli.mjs src/cli.ts daily
+```
+
+Do not use `scripts/install-schedule.ps1` here; that is for a Windows PC.
+
+What the daily run does: tops up content for each type, submits what is ready
+within quota, exports the manual queue, verifies what was sent, refreshes the
+reports, and alerts on anything lost. A failing step does not stop the rest.
+
+---|---|
 | Source | the same GitHub repo |
 | Custom Start Command | `node node_modules/tsx/dist/cli.mjs src/cli.ts daily` |
 | Cron Schedule | `0 5 * * *` (05:00 UTC, ~10:30 IST) |

@@ -41,6 +41,7 @@ import { indexationReport, logIndexNow, submitToIndexNow } from './indexing/inde
 import { printPipeline, runDaily, runForAll, runWeekly } from './schedule/pipeline.ts';
 import { printDoctor, runDoctor } from './report/doctor.ts';
 import { startWeb } from './web/server.ts';
+import { startScheduler } from './schedule/timer.ts';
 import { writeDashboard } from './report/dashboard.ts';
 import type { SubmissionType } from './config.ts';
 
@@ -870,6 +871,18 @@ program
   .action(async (opts) => {
     const port = Number(process.env.PORT || opts.port || 4317);
     const url = await startWeb(port, opts.host);
+
+    // The schedule runs in this process, because a Railway volume attaches to
+    // one service only: a separate cron service would get its own empty
+    // database and quietly diverge from what the panel shows.
+    const schedule = startScheduler();
+    if (schedule.daily || schedule.weekly) {
+      console.log(
+        `  scheduled: ${schedule.daily ? 'daily ' + schedule.daily : ''}` +
+          `${schedule.weekly ? ' weekly ' + schedule.weekly : ''} UTC
+`,
+      );
+    }
     console.log(`
   ${url}
 `);
