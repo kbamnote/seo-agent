@@ -22,7 +22,17 @@ const esc = (s) =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 
+/** ?client=<id> in the address selects which client the panel shows. */
+function clientParam() {
+  const id = new URLSearchParams(window.location.search).get('client');
+  return id ? (id) : null;
+}
+
 async function api(path, options) {
+  const chosen = clientParam();
+  if (chosen && !path.includes('client=')) {
+    path += (path.includes('?') ? '&' : '?') + 'client=' + encodeURIComponent(chosen);
+  }
   const res = await fetch('/api/' + path, {
     headers: { 'content-type': 'application/json' },
     ...options,
@@ -356,6 +366,66 @@ views.catalog = async () => {
       .join('')}</tbody></table></div>`;
 };
 
+
+views.clients = async () => {
+  const ids = await api('clients');
+  const current = state.cache.overview ? state.cache.overview.client.id : ids[0];
+
+  const row = (i) => `<div class="kw">
+      <input type="text" data-kw="${i}" placeholder="keyword ${i + 1}, e.g. business card printing in Nagpur">
+      <input type="url" data-target="${i}" placeholder="page it links to (blank = homepage)">
+      <span></span>
+    </div>`;
+
+  return `
+    <h2>Clients</h2>
+    <div class="card">
+      ${ids.map((id) => `<div>${id === current ? '<b>' + esc(id) + '</b> (showing)' : esc(id)}</div>`).join('')}
+      <p class="hint">Switch client by adding <code>?client=&lt;id&gt;</code> to the address.</p>
+    </div>
+
+    <h2>Add a client</h2>
+    <div class="card">
+      <div class="form-grid">
+        <label for="f-site">Website</label>
+        <div>
+          <input type="url" id="f-site" placeholder="https://example.com" required>
+          <div class="hint">Must start with https://. The id is taken from the domain.</div>
+        </div>
+
+        <label for="f-name">Business name</label>
+        <input type="text" id="f-name" placeholder="Example Pvt Ltd">
+
+        <label for="f-city">City</label>
+        <input type="text" id="f-city" placeholder="Nagpur">
+
+        <label for="f-niche">What they do</label>
+        <div>
+          <input type="text" id="f-niche" placeholder="commercial printing: business cards, brochures, signage">
+          <div class="hint">One line. Used to find relevant platforms and set the tone.</div>
+        </div>
+
+        <label>Keywords</label>
+        <div id="f-keywords">${[0, 1, 2, 3].map(row).join('')}
+          <div class="hint">A deep link to the page that answers the query is worth far more than another homepage link.</div>
+        </div>
+
+        <label for="f-facts">Verified facts</label>
+        <div>
+          <textarea id="f-facts" placeholder="One per line. Years in business, what you offer, turnaround times, delivery area."></textarea>
+          <div class="hint"><b>This is the single biggest lever on quality.</b> It is the only source of
+          specifics the writer may state. Leave it empty and every article stays generic, because the
+          writer is forbidden from inventing anything.</div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <button class="act primary" id="f-save">Add client</button>
+        <span class="muted">Stored in the database on the volume, so it survives redeploys.</span>
+      </div>
+    </div>`;
+};
+
 // ── wiring ──────────────────────────────────────────────────────────────────
 
 function badge(id, n) {
@@ -424,6 +494,39 @@ main.addEventListener('click', async (e) => {
       await show('manual');
     } catch (err) {
       toast(err.message, true);
+    }
+    return;
+  }
+
+
+  const save = e.target.closest('#f-save');
+  if (save) {
+    const val = (id) => (document.getElementById(id) || {}).value || '';
+    const keywords = [...document.querySelectorAll('[data-kw]')]
+      .map((el) => ({
+        keyword: el.value.trim(),
+        targetUrl: (document.querySelector(`[data-target="${el.dataset.kw}"]`) || {}).value.trim(),
+      }))
+      .filter((k) => k.keyword);
+
+    save.disabled = true;
+    try {
+      const made = await api('clients', {
+        method: 'POST',
+        body: JSON.stringify({
+          siteUrl: val('f-site'),
+          name: val('f-name'),
+          city: val('f-city'),
+          niche: val('f-niche'),
+          facts: val('f-facts'),
+          keywords,
+        }),
+      });
+      toast(`${made.id} added with ${made.keywords} keyword(s)`);
+      window.location.search = `?client=${encodeURIComponent(made.id)}`;
+    } catch (err) {
+      toast(err.message, true);
+      save.disabled = false;
     }
     return;
   }

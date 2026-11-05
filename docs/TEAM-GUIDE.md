@@ -69,6 +69,18 @@ phone verification once. The note tells you what matters on that platform.
 
 ---
 
+## Adding a client (managers)
+
+**Clients** tab → fill in the website, city, what they do, up to four keywords
+and the facts the writer may state → **Add client**.
+
+It is stored in the database, not in a file, so it survives a redeploy. Switch
+between clients by adding `?client=<id>` to the address.
+
+The **verified facts** box is the one that matters. It is the only source of
+specifics the writer may state about the business — leave it empty and every
+article stays general, because the writer is forbidden from inventing anything.
+
 ## The other tabs, briefly
 
 | Tab | What it tells you |

@@ -26,7 +26,8 @@ import { timingSafeEqual } from 'node:crypto';
 import { createReadStream, existsSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, normalize, resolve } from 'node:path';
 import { PROJECT_ROOT, all, get, initSchema, run } from '../db/index.ts';
-import { listClientIds, loadClientConfig } from '../config.ts';
+import { listClientIds, loadClientConfig, type ClientConfig, type KeywordConfig } from '../config.ts';
+import { importRows } from '../import/rows.ts';
 import { quotaReport, pickWork } from '../submit/runner.ts';
 import { adapterFor } from '../submit/adapters/index.ts';
 import { runDoctor } from '../report/doctor.ts';
@@ -259,6 +260,112 @@ function queueList(id: string) {
   });
 }
 
+
+/**
+ * Builds a client from what the form sends, and registers it.
+ *
+ * Validation is deliberately strict about the two things that cause silent
+ * damage later: a site URL that will not parse, and keywords with no target.
+ * Everything else can be edited afterwards.
+ */
+function createClient(body: Record<string, unknown>): { id: string; keywords: number } {
+  const siteUrl = String(body.siteUrl ?? '').trim();
+  if (!/^https?:\/\//i.test(siteUrl)) {
+    throw new Error('The website must start with http:// or https://');
+  }
+
+  let host: string;
+  try {
+    host = new URL(siteUrl).hostname.replace(/^www\./i, '');
+  } catch {
+    throw new Error(`"${siteUrl}" is not a valid website address`);
+  }
+
+  // The first label of the domain reads better than the whole host:
+  // "mrprintworld", not "mrprintworld-com".
+  const fromHost = (host.split('.')[0] ?? host).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const id = String(body.id ?? '').trim().toLowerCase() || fromHost;
+  if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) {
+    throw new Error('The id may use only lowercase letters, numbers and hyphens');
+  }
+
+  const rawKeywords = Array.isArray(body.keywords) ? body.keywords : [];
+  const keywords: KeywordConfig[] = rawKeywords
+    .map((k) => k as Record<string, unknown>)
+    .filter((k) => String(k.keyword ?? '').trim())
+    .map((k, i) => {
+      const target = String(k.targetUrl ?? '').trim() || siteUrl;
+      if (!/^https?:\/\//i.test(target)) {
+        throw new Error(`Keyword ${i + 1}: the page it links to must be a full URL`);
+      }
+      return {
+        keyword: String(k.keyword).trim(),
+        targetUrl: target,
+        priority: Number(k.priority) || 1,
+      };
+    });
+
+  if (!keywords.length) throw new Error('Add at least one keyword');
+
+  const name = String(body.name ?? '').trim() || host;
+  const facts = String(body.facts ?? '')
+    .split('\n')
+    .map((f) => f.replace('\r', '').trim())
+    .filter(Boolean);
+
+  const cfg: ClientConfig = {
+    id,
+    name,
+    siteUrl,
+    niche: String(body.niche ?? '').trim() || undefined,
+    city: String(body.city ?? '').trim() || undefined,
+    country: String(body.country ?? '').trim() || 'India',
+    contact: {
+      email: String(body.email ?? '').trim() || undefined,
+      phone: String(body.phone ?? '').trim() || undefined,
+      preferredUsername: id.replace(/-/g, ''),
+    },
+    keywords,
+    quotas: {
+      perDayTotal: Number(body.perDayTotal) || 5,
+      perDayPerType: {
+        blog: 1,
+        profile: 1,
+        directory: 1,
+        bookmarking: 1,
+        pdf: 1,
+        ppt: 1,
+        image: 1,
+        mindmap: 1,
+      },
+      perSitePerWeek: 1,
+      minMinutesBetweenSubmissions: 12,
+    },
+    approval: {
+      autoSubmit: ['bookmarking', 'profile', 'directory', 'pdf', 'ppt', 'image', 'mindmap', 'ping'],
+      requiresApproval: ['blog'],
+    },
+  };
+
+  (cfg as unknown as Record<string, unknown>).content = {
+    tone: 'plain and practical, written for the person actually deciding',
+    audience: String(body.audience ?? '').trim() || undefined,
+    facts,
+    forbidden: [
+      'figures the client has not verified',
+      'prices or discounts',
+      'testimonials or named customers',
+      'claims of being the best or number one',
+      'comparisons naming competitors',
+    ],
+    mustInclude: ['a concrete takeaway a reader can act on without buying anything'],
+  };
+
+  // importRows with no rows registers the client and its keywords.
+  importRows(cfg, [], { plaintextPasswords: false });
+  return { id, keywords: keywords.length };
+}
+
 // ── HTTP plumbing ───────────────────────────────────────────────────────────
 
 function json(res: ServerResponse, status: number, body: unknown) {
@@ -413,6 +520,11 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
         );
         if (!changed.changes) return json(res, 404, { error: 'no such submission' });
         return json(res, 200, { id, url: posted, status: 'submitted' });
+      }
+
+      if (path === '/api/clients') {
+        const made = createClient(body as Record<string, unknown>);
+        return json(res, 200, made);
       }
 
       const siteStatus = /^\/api\/sites\/([^/]+)\/status$/.exec(path);

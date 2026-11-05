@@ -9,7 +9,7 @@
 import 'dotenv/config';
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, basename } from 'node:path';
-import { PROJECT_ROOT } from './db/index.ts';
+import { PROJECT_ROOT, all, get } from './db/index.ts';
 
 export const CLIENTS_DIR = resolve(PROJECT_ROOT, 'config/clients');
 export const ARTIFACTS_DIR = resolve(PROJECT_ROOT, 'data/artifacts');
@@ -50,7 +50,29 @@ export interface ClientConfig {
   approval?: { autoSubmit?: string[]; requiresApproval?: string[] };
 }
 
+/**
+ * Clients live in the database first, and in config/clients/ second.
+ *
+ * A config file works on a laptop and not on a host: the container filesystem
+ * is rebuilt on every deploy, so a client added through the web UI would
+ * vanish at the next push. The database sits on a mounted volume and survives,
+ * so that is where a client added at runtime belongs. Files remain as a way to
+ * seed or version a client in the repo.
+ */
+function loadClientFromDb(id: string): ClientConfig | null {
+  const row = get<{ config_json: string }>('SELECT config_json FROM clients WHERE id = ?', id);
+  if (!row?.config_json) return null;
+  try {
+    return JSON.parse(row.config_json) as ClientConfig;
+  } catch {
+    return null;
+  }
+}
+
 export function loadClientConfig(id: string): ClientConfig {
+  const fromDb = loadClientFromDb(id);
+  if (fromDb) return fromDb;
+
   const path = resolve(CLIENTS_DIR, `${id}.json`);
   if (!existsSync(path)) {
     const available = listClientIds();
@@ -71,12 +93,24 @@ export function loadClientConfig(id: string): ClientConfig {
 }
 
 export function listClientIds(): string[] {
-  if (!existsSync(CLIENTS_DIR)) return [];
-  return readdirSync(CLIENTS_DIR)
-    // A leading underscore marks a file the loader ignores, which is how
-    // _template.json can live beside the real configs without becoming a client.
-    .filter((f) => f.endsWith('.json') && !f.startsWith('_'))
-    .map((f) => basename(f, '.json'));
+  const ids = new Set<string>();
+
+  // Added at runtime, stored on the volume.
+  try {
+    for (const row of all<{ id: string }>('SELECT id FROM clients ORDER BY id')) ids.add(row.id);
+  } catch {
+    // The schema may not exist yet on a first run; files alone will do.
+  }
+
+  if (existsSync(CLIENTS_DIR)) {
+    for (const f of readdirSync(CLIENTS_DIR)) {
+      // A leading underscore marks a file the loader ignores, which is how
+      // _template.json lives beside the real configs without becoming a client.
+      if (f.endsWith('.json') && !f.startsWith('_')) ids.add(basename(f, '.json'));
+    }
+  }
+
+  return [...ids];
 }
 
 /** Reads an env var, with a clear error instead of a mystery undefined. */
