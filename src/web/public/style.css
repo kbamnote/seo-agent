@@ -182,3 +182,20 @@ input[type=url], input[type=text] {
 .hint { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
 .kw { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; margin-bottom: 8px; }
 @media (max-width: 700px) { .kw { grid-template-columns: 1fr; } }
+
+/*
+ * The legend above the Links table. The status word says what state a link is
+ * in; it does not say whose move it is, which is the only thing a person
+ * opening this page needs to know.
+ */
+.legend { padding: 14px 16px; }
+.legend h3 {
+  margin: 0 0 10px; font-size: 12px; text-transform: uppercase;
+  letter-spacing: .05em; color: var(--ink-3); font-weight: 600;
+}
+.legend-row {
+  display: flex; gap: 12px; align-items: baseline;
+  padding: 3px 0; font-size: 13px; color: var(--ink-2);
+}
+.legend-row .chip { flex: none; min-width: 104px; text-align: center; }
+#f-add-kw { margin-top: 2px; }

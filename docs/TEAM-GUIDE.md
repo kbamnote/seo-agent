@@ -94,13 +94,20 @@ article stays general, because the writer is forbidden from inventing anything.
 
 ## What the words mean
 
-| Word | Meaning |
-|---|---|
-| **verified live** | checked: the link really is on that page. The only number that counts. |
-| **waiting** | submitted, not yet confirmed. Many platforms moderate for days. |
-| **lost** | it was there, and now it is gone. The platform removed it. |
-| **platform blocked the check** | the site refused our checker. Nobody knows either way; not a failure. |
-| **text mention, not a link** | the client's address appears as plain text with no link. Worth nothing. |
+The same list is printed above the Links table in the panel, so you never have
+to remember it.
+
+| Word | Meaning | Whose move |
+|---|---|---|
+| **live** | checked: the link really is on that page. The only number that counts. | nobody's — done |
+| **waiting** | posted, not yet confirmed. Many platforms moderate for days. | nobody's — wait |
+| **you post it** | the platform blocks robots. It is in your Manual queue. | **yours** |
+| **needs sign-in** | the platform wants a login the agent cannot do. | **yours** |
+| **failed** | the agent could not post it. It tries again by itself. | nobody's |
+| **removed** | it was live, and the platform took it down. | nobody's |
+| **no URL** | posted, but nobody saved the URL, so it can never be checked. | avoid this |
+| **platform blocked the check** | the site refused our checker. Nobody knows either way; not a failure. | nobody's |
+| **text mention, not a link** | the client's address appears as plain text with no link. Worth nothing. | nobody's |
 
 ---
 

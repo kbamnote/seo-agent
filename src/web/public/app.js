@@ -54,11 +54,11 @@ function toast(message, bad) {
 
 function chip(status) {
   const map = {
-    verified: ['chip-verified', 'verified'],
-    submitted: ['chip-waiting', 'submitted'],
-    manual_queue: ['chip-waiting', 'with a human'],
-    needs_assist: ['chip-waiting', 'needs you'],
-    lost: ['chip-lost', 'lost'],
+    verified: ['chip-verified', 'live'],
+    submitted: ['chip-waiting', 'waiting'],
+    manual_queue: ['chip-waiting', 'you post it'],
+    needs_assist: ['chip-waiting', 'needs sign-in'],
+    lost: ['chip-lost', 'removed'],
     failed: ['chip-lost', 'failed'],
     unverifiable: ['chip-unknown', 'no URL'],
     pending: ['chip-waiting', 'pending'],
@@ -68,6 +68,38 @@ function chip(status) {
   };
   const [cls, label] = map[status] || ['chip-plain', status];
   return `<span class="chip ${cls}">${esc(label)}</span>`;
+}
+
+/**
+ * What each link status means and whose move it is.
+ *
+ * The status word alone tells you the state and not what to do about it, which
+ * is the only question someone opening this page actually has.
+ */
+const LINK_HELP = {
+  verified: 'Done. Checked and the link really is on that page.',
+  submitted: 'Posted. The platform has not shown it yet — many moderate for days.',
+  manual_queue: 'Yours to do. Open Manual queue, post it, paste the URL back.',
+  needs_assist: 'The platform wants a login. Post it by hand and record the URL.',
+  lost: 'It was live and the platform took it down. Nothing to do.',
+  failed: 'The agent could not post it. It tries again by itself.',
+  unverifiable: 'Posted, but no URL was saved, so it can never be checked.',
+};
+
+/** A platform name you can click, rather than a domain you must retype. */
+function platformLink(domain) {
+  if (!domain) return '<span class="muted">-</span>';
+  const href = 'https://' + String(domain).replace(/^https?:\/\//, '');
+  return '<a href="' + esc(href) + '" target="_blank" rel="noopener"><b>' + esc(domain) + '</b></a>';
+}
+
+/** One keyword row. Top level so the "add another" button can make more. */
+function keywordRow(i) {
+  return `<div class="kw">
+      <input type="text" data-kw="${i}" placeholder="keyword ${i + 1}, e.g. business card printing in Nagpur">
+      <input type="url" data-target="${i}" placeholder="page it links to (blank = homepage)">
+      <span></span>
+    </div>`;
 }
 
 /** Minimal markdown: headings, bold, links, paragraphs. Nothing else is used. */
@@ -256,7 +288,7 @@ views.manual = async () => {
     .map(
       (i) => `<div class="card" style="margin-bottom:14px">
       <div class="row" style="justify-content:space-between">
-        <div><b>${esc(i.site)}</b> <span class="muted">· ${esc(i.type)} · record id ${i.id}</span></div>
+        <div>${platformLink(i.site)} <span class="muted">· ${esc(i.type)} · record id ${i.id}</span></div>
         ${chip(i.status)}
       </div>
       <p class="muted" style="margin:8px 0 0">anchor <b>${esc(i.anchor || '')}</b> &rarr; ${esc(i.targetUrl || '')}
@@ -296,7 +328,7 @@ views.queue = async () => {
     <tbody>${items
       .map(
         (i) => `<tr>
-          <td><b>${esc(i.site)}</b></td>
+          <td>${platformLink(i.site)}</td>
           <td>${esc(i.type)}</td>
           <td>#${i.contentId} ${esc(i.title)}</td>
           <td>${esc(i.anchor)}</td>
@@ -304,7 +336,8 @@ views.queue = async () => {
         </tr>`,
       )
       .join('')}</tbody></table>
-    <p class="muted">Send them with <code>npm run submit -- run -n 1</code>.</p>
+    <p class="muted">The agent posts these by itself on the daily run. Nothing to do here —
+    this tab is only so you can see what is coming.</p>
   </div>`;
 };
 
@@ -312,13 +345,22 @@ views.links = async () => {
   const items = await api('links');
   if (!items.length) return `<div class="card"><p class="dim" style="margin:0">No submissions yet.</p></div>`;
 
-  return `<div class="card"><table>
+  const legend = ['verified', 'submitted', 'manual_queue', 'needs_assist', 'failed', 'lost', 'unverifiable']
+    .map((k) => `<div class="legend-row">${chip(k)}<span>${esc(LINK_HELP[k])}</span></div>`)
+    .join('');
+
+  return `<div class="card legend"><h3>What the words mean</h3>${legend}</div>
+  <div class="card"><table>
     <thead><tr><th>status</th><th>platform</th><th>type</th><th>url</th><th>rel</th><th>checked</th></tr></thead>
     <tbody>${items
       .map(
         (i) => `<tr>
-          <td>${chip(i.status)}</td>
-          <td>${esc(i.site || '-')}</td>
+          <td>${chip(i.status)}${
+            LINK_HELP[i.status]
+              ? `<div class="muted" style="font-size:11.5px;max-width:19ch">${esc(LINK_HELP[i.status])}</div>`
+              : ''
+          }</td>
+          <td>${platformLink(i.site)}</td>
           <td>${esc(i.type)}</td>
           <td>${
             i.url
@@ -371,12 +413,6 @@ views.clients = async () => {
   const ids = await api('clients');
   const current = state.cache.overview ? state.cache.overview.client.id : ids[0];
 
-  const row = (i) => `<div class="kw">
-      <input type="text" data-kw="${i}" placeholder="keyword ${i + 1}, e.g. business card printing in Nagpur">
-      <input type="url" data-target="${i}" placeholder="page it links to (blank = homepage)">
-      <span></span>
-    </div>`;
-
   return `
     <h2>Clients</h2>
     <div class="card">
@@ -406,7 +442,8 @@ views.clients = async () => {
         </div>
 
         <label>Keywords</label>
-        <div id="f-keywords">${[0, 1, 2, 3].map(row).join('')}
+        <div id="f-keywords">${[0, 1, 2, 3].map((i) => keywordRow(i)).join('')}
+          <button class="act" id="f-add-kw" type="button">+ Add another keyword</button>
           <div class="hint">A deep link to the page that answers the query is worth far more than another homepage link.</div>
         </div>
 
@@ -498,6 +535,13 @@ main.addEventListener('click', async (e) => {
     return;
   }
 
+
+  const addKw = e.target.closest('#f-add-kw');
+  if (addKw) {
+    const box = document.getElementById('f-keywords');
+    addKw.insertAdjacentHTML('beforebegin', keywordRow(box.querySelectorAll('[data-kw]').length));
+    return;
+  }
 
   const save = e.target.closest('#f-save');
   if (save) {
