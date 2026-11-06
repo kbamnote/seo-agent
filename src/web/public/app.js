@@ -381,7 +381,7 @@ views.clients = async () => {
     <h2>Clients</h2>
     <div class="card">
       ${ids.map((id) => `<div>${id === current ? '<b>' + esc(id) + '</b> (showing)' : esc(id)}</div>`).join('')}
-      <p class="hint">Switch client by adding <code>?client=&lt;id&gt;</code> to the address.</p>
+      <p class="hint">Switch client with the picker at the top left.</p>
     </div>
 
     <h2>Add a client</h2>
@@ -560,5 +560,33 @@ async function refreshBadges() {
   }
 }
 
+/**
+ * The client picker in the header.
+ *
+ * Switching used to mean typing ?client=<id> into the address bar, which is
+ * fine for one person who built the thing and unusable for a team. The select
+ * stays hidden while there is only one client, so it adds nothing to look at
+ * until it is needed.
+ */
+async function fillClientSwitch() {
+  const sel = document.getElementById('client-switch');
+  if (!sel) return;
+  try {
+    const ids = await api('clients');
+    if (!ids.length) return;
+    const current = clientParam() || ids[0];
+    sel.innerHTML = ids
+      .map((id) => '<option value="' + esc(id) + '"' + (id === current ? ' selected' : '') + '>' + esc(id) + '</option>')
+      .join('');
+    sel.hidden = ids.length < 2;
+    sel.onchange = () => {
+      window.location.search = '?client=' + encodeURIComponent(sel.value);
+    };
+  } catch {
+    /* no clients yet, or the server is restarting */
+  }
+}
+
+fillClientSwitch();
 refreshBadges();
 show('overview');

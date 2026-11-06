@@ -62,6 +62,10 @@ header {
 }
 .brand { display: flex; flex-direction: column; line-height: 1.25; margin-right: 6px; }
 .brand .muted { font-size: 12px; }
+.client-switch {
+  background: var(--raised); color: var(--ink); border: 1px solid var(--border);
+  border-radius: 7px; padding: 6px 9px; font: inherit; font-size: 13px; cursor: pointer;
+}
 nav { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
 nav button {
   background: none; border: 1px solid transparent; border-radius: 7px;
